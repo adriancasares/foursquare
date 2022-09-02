@@ -1,5 +1,17 @@
+
+buildscript {
+    repositories {
+        jcenter()
+//        gradlePluginPortal()
+    }
+    dependencies {
+        classpath 'gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0'
+    }
+}
+
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group = 'com.adriancasares'
@@ -23,6 +35,7 @@ dependencies {
 
 def targetJavaVersion = 17
 java {
+    libsDirName = exportLocationCustom;
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
@@ -44,4 +57,33 @@ processResources {
     filesMatching('plugin.yml') {
         expand props
     }
+}
+
+shadowJar {
+    manifest {
+
+    }
+}
+
+
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
+
+afterEvaluate {
+    shadowJar {
+        archiveFileName = "${archivesBaseName}-${getCurrentGitBranch()}.jar"
+    }
+}
+def getCurrentGitBranch() {
+    def gitBranch = "unknown"
+    try {
+        def workingDir = new File("${project.projectDir}")
+        def result = 'git rev-parse --abbrev-ref HEAD'.execute(null, workingDir)
+        result.waitFor()
+        if (result.exitValue() == 0) {
+            gitBranch = result.text.trim()
+        }
+    } catch (e) {
+    }
+    return gitBranch
 }
