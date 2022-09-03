@@ -1,8 +1,10 @@
 package com.adriancasares.foursquare.base.command;
 
+import com.adriancasares.foursquare.FourSquare;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
+import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,6 +67,9 @@ public abstract class Command {
     }
 
     public void register() {
-
+        ((CraftServer) FourSquare.getFourSquare().getServer()).getCommandMap().register(
+                FourSquare.getFourSquare().getName(),
+                bukkitCommand
+        );
     }
 }
