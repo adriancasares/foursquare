@@ -1,7 +1,13 @@
 package com.adriancasares.foursquare.base.command;
 
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class SubCommand {
 
@@ -67,5 +73,23 @@ public abstract class SubCommand {
 
     public List<SubCommand> getSubCommands() {
         return subCommands;
+    }
+
+    public List<String> tab(CommandSender sender, List<String> args) {
+        List<String> list = new ArrayList<>();
+         String nextArgument = args.get(0).toLowerCase();
+
+            for(SubCommand sub : subCommands) {
+                if (args.size() == argumentPosition + 1) {
+                    list.addAll(sub.getAllNames());
+                } else if (sub.getAllNames().contains(nextArgument)) {
+                    list.addAll(sub.tab(sender, args));
+                    break;
+                }
+            }
+
+        Stream<String> stream = list.stream().filter((item) -> item.toLowerCase().startsWith(args.get(args.size() - 1).toLowerCase()));
+
+        return stream.collect(Collectors.toCollection(ArrayList::new));
     }
 }
