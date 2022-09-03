@@ -17,22 +17,6 @@ public final class FourSquare extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         fourSquare = this;
-
-        SubCommand debugCmd = new SubCommand("debug", Arrays.asList("debug2"), 0) {
-            @Override
-            public void runBaseCall(CommandDetails details) {
-                getLogger().info("debug command run");
-            }
-        };
-
-        Command cmd = new Command(CommandType.UNIVERSAL, "test", "test command", "test command", Arrays.asList("test2"), debugCmd) {
-            @Override
-            public void run(CommandDetails details) {
-                getLogger().info("command run");
-            }
-        };
-
-        cmd.register();
     }
 
     @Override
