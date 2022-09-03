@@ -1,5 +1,8 @@
 package com.adriancasares.foursquare;
 
+import com.adriancasares.foursquare.base.AdminUtilCommand;
+import com.adriancasares.foursquare.base.GameInitCommand;
+import com.adriancasares.foursquare.base.Team;
 import com.adriancasares.foursquare.base.command.Command;
 import com.adriancasares.foursquare.base.command.CommandDetails;
 import com.adriancasares.foursquare.base.command.CommandType;
@@ -13,10 +16,17 @@ public final class FourSquare extends JavaPlugin {
 
     private static FourSquare fourSquare;
 
+    public static int MAX_TEAM_PLAYERS = 4;
+
+    private Team currentTeam;
+
     @Override
     public void onEnable() {
         // Plugin startup logic
         fourSquare = this;
+
+        new GameInitCommand().register();
+        new AdminUtilCommand().register();
     }
 
     @Override
@@ -26,5 +36,13 @@ public final class FourSquare extends JavaPlugin {
 
     public static FourSquare getFourSquare() {
         return fourSquare;
+    }
+
+    public Team getCurrentTeam() {
+        return currentTeam;
+    }
+
+    public void setCurrentTeam(Team currentTeam) {
+        this.currentTeam = currentTeam;
     }
 }
