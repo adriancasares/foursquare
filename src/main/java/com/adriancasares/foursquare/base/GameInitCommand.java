@@ -32,8 +32,6 @@ public class GameInitCommand extends Command {
 
                         FourSquare.getFourSquare().setCurrentGame(game);
 
-                        game.onStart();
-
                         details.getSender().sendMessage("Setting up artifact!");
 
                     }

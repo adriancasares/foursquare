@@ -2,6 +2,7 @@ package com.adriancasares.foursquare.base;
 
 import com.adriancasares.foursquare.FourSquare;
 import com.adriancasares.foursquare.base.event.EventConsumer;
+import com.adriancasares.foursquare.base.world.WorldWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -14,7 +15,10 @@ public abstract class Game {
 
     private ArrayList<EventConsumer> events = new ArrayList<>();
 
+    private ArrayList<WorldWrapper> worlds = new ArrayList<>();
+
     public Game(Team team) {
+        this.team = team;
 
         EventConsumer<PlayerJoinEvent> joinEvent = FourSquare.fs().getEventSupplier().registerConsumer(PlayerJoinEvent.class, (e) -> {
             Player player = e.getPlayer();
@@ -65,6 +69,17 @@ public abstract class Game {
     public void deregisterEvents() {
         for(EventConsumer event : events) {
             event.cancel();
+        }
+    }
+
+    public void registerWorld(WorldWrapper world) {
+        worlds.add(world);
+    }
+
+    public void deregisterWorlds() {
+        System.out.println("deregistering worlds");
+        for(WorldWrapper world: worlds) {
+            world.delete();
         }
     }
 

@@ -4,6 +4,7 @@ import com.adriancasares.foursquare.FourSquare;
 import com.adriancasares.foursquare.base.Game;
 import com.adriancasares.foursquare.base.Team;
 import com.adriancasares.foursquare.base.event.EventConsumer;
+import com.adriancasares.foursquare.base.world.WorldWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.event.player.PlayerChatEvent;
 
@@ -16,11 +17,18 @@ public class Artifact extends Game {
     @Override
     public void onStart() {
 
+        WorldWrapper world = new WorldWrapper("artifact", null, true);
+        registerWorld(world);
+
+        getTeam().getPlayers().forEach((player) -> {
+            player.getPlayer().teleport(world.getWorld().getSpawnLocation());
+        });
     }
 
     @Override
     public void onEnd() {
         deregisterEvents();
+        deregisterWorlds();
     }
 
     @Override

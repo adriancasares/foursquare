@@ -77,6 +77,7 @@ public final class FourSquare extends JavaPlugin {
         }
 
         this.currentGame = currentGame;
+        this.currentGame.onStart();
     }
 
     public EventSupplier getEventSupplier() {
