@@ -1,5 +1,7 @@
 package com.adriancasares.foursquare.base;
 
+import com.adriancasares.foursquare.FourSquare;
+import com.adriancasares.foursquare.artifact.Artifact;
 import com.adriancasares.foursquare.base.command.Command;
 import com.adriancasares.foursquare.base.command.CommandDetails;
 import com.adriancasares.foursquare.base.command.CommandType;
@@ -20,6 +22,18 @@ public class GameInitCommand extends Command {
                 Arrays.asList(),
                 new SubCommand("artifact", Arrays.asList(), 0) {
                     public void runBaseCall(CommandDetails details) {
+
+                        if(FourSquare.getFourSquare().getCurrentTeam() == null) {
+                            details.getSender().sendMessage("Make a team first!");
+                            return;
+                        }
+
+                        Artifact game = new Artifact(FourSquare.getFourSquare().getCurrentTeam());
+
+                        FourSquare.getFourSquare().setCurrentGame(game);
+
+                        game.onStart();
+
                         details.getSender().sendMessage("Setting up artifact!");
 
                     }

@@ -83,4 +83,14 @@ public class Team {
 
         return team;
     }
+
+    public boolean containsPlayer(Player player) {
+        for(Person person : players) {
+            if(person.isPlayer() && person.getUuid().equals(player.getUniqueId())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
