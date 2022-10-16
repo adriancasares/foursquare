@@ -2,20 +2,27 @@ package com.adriancasares.foursquare.base;
 
 import com.adriancasares.foursquare.FourSquare;
 import com.adriancasares.foursquare.base.event.EventConsumer;
+import com.adriancasares.foursquare.base.event.EventContainer;
+import com.adriancasares.foursquare.base.schedule.ScheduleContainer;
 import com.adriancasares.foursquare.base.world.WorldWrapper;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
 
-public abstract class Game {
+public abstract class Game implements EventContainer, ScheduleContainer {
 
     private Team team;
 
     private ArrayList<EventConsumer> events = new ArrayList<>();
 
     private ArrayList<WorldWrapper> worlds = new ArrayList<>();
+
+    private ArrayList<Integer> tasks = new ArrayList<>();
+
+    private GamePhase currentPhase;
 
     public Game(Team team) {
         this.team = team;
@@ -77,10 +84,48 @@ public abstract class Game {
     }
 
     public void deregisterWorlds() {
-        System.out.println("deregistering worlds");
         for(WorldWrapper world: worlds) {
             world.delete();
         }
     }
 
+    public GamePhase getCurrentPhase() {
+        return currentPhase;
+    }
+
+    public void setCurrentPhase(GamePhase currentPhase) {
+        if(this.currentPhase != null) {
+            this.currentPhase.onEnd();
+        }
+
+        this.currentPhase = currentPhase;
+
+        this.currentPhase.onStart();
+    }
+
+    public boolean inPhase(String phaseName) {
+        return currentPhase.getName().equals(phaseName);
+    }
+
+    @Override
+    public ArrayList<EventConsumer> getEvents() {
+        return events;
+    }
+
+    @Override
+    public void registerTask(int taskId) {
+        tasks.add(taskId);
+    }
+
+    @Override
+    public void deregisterTasks() {
+        for(int taskId : tasks) {
+            Bukkit.getScheduler().cancelTask(taskId);
+        }
+    }
+
+    @Override
+    public ArrayList<Integer> getTasks() {
+        return tasks;
+    }
 }

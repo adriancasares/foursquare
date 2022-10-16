@@ -16,6 +16,8 @@ public class WorldWrapper {
 
     private World world;
 
+    private String name;
+
     public World getWorld() {
         return world;
     }
@@ -23,7 +25,9 @@ public class WorldWrapper {
     public WorldWrapper(String name, String template, boolean hexSuffix) {
         String withSuffix = name + (hexSuffix ? "-" + Integer.toHexString(ThreadLocalRandom.current().nextInt()) : "");
 
-        if(template != null) {
+        this.name = withSuffix;
+
+        if (template != null) {
             Path source = Paths.get(template);
             Path target = Paths.get(withSuffix);
 
@@ -33,8 +37,10 @@ public class WorldWrapper {
                 exception.printStackTrace();
             }
         }
+    }
 
-        WorldCreator worldCreator = new WorldCreator(withSuffix);
+    public void create() {
+        WorldCreator worldCreator = new WorldCreator(name);
         worldCreator.type(WorldType.FLAT);
 
         this.world = worldCreator.createWorld();
@@ -54,5 +60,9 @@ public class WorldWrapper {
         }
 
         world = null;
+    }
+
+    public String getName() {
+        return name;
     }
 }
