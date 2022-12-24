@@ -13,12 +13,15 @@ public class Artifact extends Game {
 
     private WorldWrapper world;
 
+    private ArtifactMapConfig mapConfig = ArtifactMapConfig.createDefault();
+
     @Override
     public void onStart() {
 
         world = new WorldWrapper("artifact", null, true);
 
         setCurrentPhase(new ArtifactStarting(this));
+
         world.create();
 
         registerWorld(world);
@@ -57,5 +60,9 @@ public class Artifact extends Game {
 
     public WorldWrapper getWorld() {
         return world;
+    }
+
+    public ArtifactMapConfig getMapConfig() {
+        return mapConfig;
     }
 }

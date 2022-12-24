@@ -5,14 +5,17 @@ import com.adriancasares.foursquare.base.GamePhase;
 import com.adriancasares.foursquare.base.event.EventConsumer;
 import com.adriancasares.foursquare.base.world.WorldWrapper;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.minecraft.util.profiling.jfr.event.WorldLoadFinishedEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.event.world.WorldLoadEvent;
 
 import static com.adriancasares.foursquare.FourSquare.fs;
 
 public class ArtifactStarting extends GamePhase {
 
-    static final int STARTING_TIME = 20;
+    static final int STARTING_TIME = 5;
     private int countdown = STARTING_TIME;
 
     public ArtifactStarting(Artifact parent) {
@@ -21,12 +24,18 @@ public class ArtifactStarting extends GamePhase {
     }
 
 
+    private void placeArtifact(World world) {
+        ArtifactMapConfig mapConfig = ((Artifact) getParent()).getMapConfig();
+
+        mapConfig.getArtifactLocation().getBlockLocation(world).getBlock().setType(Material.GOLD_BLOCK);
+    }
+
     private void startCountdown() {
         int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(fs(), () -> {
-//            if(countdown == 0) {
-//                getParent().setCurrentPhase(new ArtifactPlaying((Artifact) getParent()));
-//                return;
-//            }
+            if(countdown == 0) {
+                getParent().setCurrentPhase(new ArtifactPlaying((Artifact) getParent()));
+                return;
+            }
 
             Bukkit.getServer().broadcastMessage("Starting in " + countdown);
 
@@ -46,6 +55,7 @@ public class ArtifactStarting extends GamePhase {
         EventConsumer load = FourSquare.fs().getEventSupplier().registerConsumer(WorldLoadEvent.class, (e) -> {
             if(world.getName().equals(e.getWorld().getName())) {
                 startCountdown();
+                placeArtifact(e.getWorld());
             }
         });
 
