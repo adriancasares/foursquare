@@ -93,4 +93,14 @@ public class Team {
 
         return false;
     }
+
+    public Person getPerson(Player player) {
+        for(Person person : players) {
+            if(person.isPlayer() && person.getUuid().equals(player.getUniqueId())) {
+                return person;
+            }
+        }
+
+        return null;
+    }
 }

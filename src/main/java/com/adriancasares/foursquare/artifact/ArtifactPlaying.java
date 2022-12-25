@@ -3,13 +3,30 @@ package com.adriancasares.foursquare.artifact;
 import com.adriancasares.foursquare.FourSquare;
 import com.adriancasares.foursquare.base.GamePhase;
 import com.adriancasares.foursquare.base.Person;
+import com.adriancasares.foursquare.base.scoreboard.ScoreboardTemplate;
+import com.adriancasares.foursquare.base.util.FSColor;
 import com.adriancasares.foursquare.base.util.Position;
 import com.adriancasares.foursquare.base.util.inventory.ItemBuilder;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import static com.adriancasares.foursquare.FourSquare.fs;
 
 public class ArtifactPlaying extends GamePhase {
 
@@ -17,12 +34,17 @@ public class ArtifactPlaying extends GamePhase {
 
     private Person artifactHolder = null;
 
-    private ItemBuilder IRON_SWORD = new ItemBuilder(Material.IRON_SWORD);
+    private ItemBuilder STONE_SWORD = new ItemBuilder(Material.STONE_SWORD);
     private ItemBuilder IRON_PICKAXE = new ItemBuilder(Material.IRON_PICKAXE);
 
     private ItemBuilder SCAFFOLDING = new ItemBuilder(Material.WHITE_TERRACOTTA, "Scaffolding");
 
     private ItemBuilder SNOWBALL = new ItemBuilder(Material.SNOWBALL);
+
+    private ItemBuilder BASE_CHESTPLATE = new ItemBuilder(Material.LEATHER_CHESTPLATE);
+
+    private ScoreboardTemplate scoreboardTemplate = new ScoreboardTemplate(Component.text("First to 90").decorate(TextDecoration.BOLD),
+            new ArrayList<>());
 
     public ArtifactPlaying(Artifact parent) {
         super("PLAYING", parent);
@@ -34,14 +56,66 @@ public class ArtifactPlaying extends GamePhase {
 
 
 
-    private void setInventory(Player player) {
+    private void setInventory(Player player, int index) {
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
 
-        player.getInventory().setItem(0, IRON_SWORD.build(1));
+        player.getInventory().setItem(0, STONE_SWORD.build(1));
         player.getInventory().setItem(1, IRON_PICKAXE.build(1));
         player.getInventory().setItem(2, SCAFFOLDING.build(64));
         player.getInventory().setItem(3, SNOWBALL.build(8));
+
+        ItemStack chestplate = BASE_CHESTPLATE.build(1);
+        LeatherArmorMeta meta = (LeatherArmorMeta) chestplate.getItemMeta();
+
+        switch (index) {
+            case 0:
+                meta.setColor(Color.fromRGB(FSColor.TEAM1.value()));
+                break;
+            case 1:
+                meta.setColor(Color.fromRGB(FSColor.TEAM2.value()));
+                break;
+            case 2:
+                meta.setColor(Color.fromRGB(FSColor.TEAM3.value()));
+                break;
+            default:
+                meta.setColor(Color.fromRGB(FSColor.TEAM4.value()));
+                break;
+        }
+
+        chestplate.setItemMeta(meta);
+
+        player.getInventory().setChestplate(chestplate);
+    }
+
+    private void handleDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+
+            // if damage kills player, drop artifact
+            if (player.getHealth() - event.getFinalDamage() <= 0) {
+                if (artifactHolder != null && artifactHolder.getPlayer().equals(player)) {
+                    setArtifactHolder(null);
+                    ((Artifact) getParent()).placeArtifact(((Artifact) getParent()).getWorld().getWorld());
+                }
+
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    private void updateScoreboard() {
+        scoreboardTemplate.getLines().clear();
+
+        for(Person person : getParent().getTeam().getPlayers()) {
+            scoreboardTemplate.getLines().add("- " + person.getPlayer().getName() + ": " + scores.get(person));
+        }
+
+        getParent().getTeam().getPlayers().forEach((player) -> {
+            Scoreboard scoreboard = getParent().getScoreboard(player);
+            Objective objective = scoreboardTemplate.build(scoreboard);
+            objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        });
     }
 
     private void teleportPlayers() {
@@ -53,15 +127,70 @@ public class ArtifactPlaying extends GamePhase {
         }
     }
 
+    public void setArtifactHolder(Person person) {
+        if(artifactHolder != null) {
+            artifactHolder.getPlayer().setGlowing(false);
+        }
+        if(person != null) {
+            person.getPlayer().setGlowing(true);
+        }
+        artifactHolder = person;
+
+    }
+
+    private void handleBlockBreak(BlockBreakEvent event) {
+        event.setCancelled(true);
+
+        if(event.getBlock().getType() == Material.GOLD_BLOCK) {
+            Person person = getParent().getTeam().getPerson(event.getPlayer());
+
+            if(person != null) {
+                setArtifactHolder(person);
+                updateScoreboard();
+            }
+
+            event.getBlock().setType(Material.AIR);
+        }
+    }
+
+    private void startArtifactTimer() {
+        int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(fs(), () -> {
+            if(artifactHolder == null) {
+                return;
+            }
+
+            int score = scores.get(artifactHolder);
+            score++;
+            scores.put(artifactHolder, score);
+
+            updateScoreboard();
+
+
+        }, 0, 20);
+
+        registerTask(taskId);
+    }
+
     @Override
     public void onStart() {
-        System.out.println("playing start");
+        for(int i = 0; i < getParent().getTeam().getPlayers().size(); i++) {
+            Person person = getParent().getTeam().getPlayers().get(i);
+            setInventory(person.getPlayer(), i);
+        }
 
-        getParent().getTeam().getPlayers().forEach((player) -> {
-            setInventory(player.getPlayer());
-        });
+        startArtifactTimer();
 
         teleportPlayers();
+
+        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(BlockBreakEvent.class, (e) -> {
+            handleBlockBreak(e);
+        }));
+
+        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(EntityDamageEvent.class, (e) -> {
+            handleDamage(e);
+        }));
+
+
     }
 
     @Override

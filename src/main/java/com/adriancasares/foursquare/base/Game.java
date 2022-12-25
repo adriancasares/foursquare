@@ -9,8 +9,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public abstract class Game implements EventContainer, ScheduleContainer {
 
@@ -21,6 +23,8 @@ public abstract class Game implements EventContainer, ScheduleContainer {
     private ArrayList<WorldWrapper> worlds = new ArrayList<>();
 
     private ArrayList<Integer> tasks = new ArrayList<>();
+
+    private HashMap<Person, Scoreboard> scoreboards = new HashMap<>();
 
     private GamePhase currentPhase;
 
@@ -79,6 +83,14 @@ public abstract class Game implements EventContainer, ScheduleContainer {
         }
     }
 
+    public void end() {
+        onEndPhase();
+        onEnd();
+    }
+    public void onEndPhase() {
+        currentPhase.end();
+    }
+
     public void registerWorld(WorldWrapper world) {
         worlds.add(world);
     }
@@ -95,7 +107,7 @@ public abstract class Game implements EventContainer, ScheduleContainer {
 
     public void setCurrentPhase(GamePhase currentPhase) {
         if(this.currentPhase != null) {
-            this.currentPhase.onEnd();
+            this.currentPhase.end();
         }
 
         this.currentPhase = currentPhase;
@@ -119,6 +131,7 @@ public abstract class Game implements EventContainer, ScheduleContainer {
 
     @Override
     public void deregisterTasks() {
+        System.out.println("Cancelling tasks, size: " + tasks.size());
         for(int taskId : tasks) {
             Bukkit.getScheduler().cancelTask(taskId);
         }
@@ -127,5 +140,13 @@ public abstract class Game implements EventContainer, ScheduleContainer {
     @Override
     public ArrayList<Integer> getTasks() {
         return tasks;
+    }
+
+    public void setScoreboard(Person person, Scoreboard scoreboard) {
+        scoreboards.put(person, scoreboard);
+    }
+
+    public Scoreboard getScoreboard(Person person) {
+        return scoreboards.get(person);
     }
 }

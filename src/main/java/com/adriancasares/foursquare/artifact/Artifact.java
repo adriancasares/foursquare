@@ -1,9 +1,15 @@
 package com.adriancasares.foursquare.artifact;
 
 import com.adriancasares.foursquare.base.Game;
+import com.adriancasares.foursquare.base.Person;
 import com.adriancasares.foursquare.base.Team;
+import com.adriancasares.foursquare.base.util.FSColor;
 import com.adriancasares.foursquare.base.world.WorldWrapper;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.scoreboard.Scoreboard;
 
 public class Artifact extends Game {
 
@@ -15,6 +21,40 @@ public class Artifact extends Game {
 
     private ArtifactMapConfig mapConfig = ArtifactMapConfig.createDefault();
 
+    private void initScorecardTeams(Scoreboard scoreboard) {
+        org.bukkit.scoreboard.Team team1 = scoreboard.registerNewTeam("team1");
+        org.bukkit.scoreboard.Team team2 = scoreboard.registerNewTeam("team2");
+        org.bukkit.scoreboard.Team team3 = scoreboard.registerNewTeam("team3");
+        org.bukkit.scoreboard.Team team4 = scoreboard.registerNewTeam("team4");
+        org.bukkit.scoreboard.Team spectators = scoreboard.registerNewTeam("spectators");
+        team1.color(NamedTextColor.AQUA);
+        team2.color(NamedTextColor.GOLD);
+        team3.color(NamedTextColor.DARK_PURPLE);
+        team4.color(NamedTextColor.LIGHT_PURPLE);
+        spectators.color(NamedTextColor.GRAY);
+
+        for(int i = 0; i < getTeam().getPlayers().size(); i++) {
+            Person person = getTeam().getPlayers().get(i);
+            switch(i) {
+                case 0:
+                    team1.addEntry(person.getPlayer().getName());
+                    break;
+                case 1:
+                    team2.addEntry(person.getPlayer().getName());
+                    break;
+                case 2:
+                    team3.addEntry(person.getPlayer().getName());
+                    break;
+                case 3:
+                    team4.addEntry(person.getPlayer().getName());
+                    break;
+            }
+        }
+
+        for(Person person : getTeam().getSpectators()) {
+            spectators.addEntry(person.getPlayer().getName());
+        }
+    }
     @Override
     public void onStart() {
 
@@ -30,12 +70,28 @@ public class Artifact extends Game {
             player.getPlayer().teleport(world.getWorld().getSpawnLocation());
         });
 
+        getTeam().getPlayers().forEach((player) -> {
+            Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+
+            player.getPlayer().setScoreboard(scoreboard);
+            player.getPlayer().setGlowing(false);
+
+            setScoreboard(player, scoreboard);
+            initScorecardTeams(scoreboard);
+        });
+    }
+
+    public void placeArtifact(World world) {
+        ArtifactMapConfig mapConfig = getMapConfig();
+
+        mapConfig.getArtifactLocation().getBlockLocation(world).getBlock().setType(Material.GOLD_BLOCK);
     }
 
     @Override
     public void onEnd() {
         deregisterEvents();
         deregisterWorlds();
+        deregisterTasks();
     }
 
     @Override
