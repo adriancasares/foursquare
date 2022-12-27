@@ -16,6 +16,8 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -31,6 +33,7 @@ import static com.adriancasares.foursquare.FourSquare.fs;
 public class ArtifactPlaying extends GamePhase {
 
     private HashMap<Person, Integer> scores = new HashMap<>();
+    private HashMap<Person, ArtifactRespawn> respawns = new HashMap<>();
 
     private Person artifactHolder = null;
 
@@ -64,6 +67,7 @@ public class ArtifactPlaying extends GamePhase {
 
         ItemStack chestplate = BASE_CHESTPLATE.build(1);
         LeatherArmorMeta meta = (LeatherArmorMeta) chestplate.getItemMeta();
+        meta.setUnbreakable(true);
 
         switch (index) {
             case 0:
@@ -88,16 +92,6 @@ public class ArtifactPlaying extends GamePhase {
     private void handleDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-
-            // if damage kills player, drop artifact
-            if (player.getHealth() - event.getFinalDamage() <= 0) {
-                if (artifactHolder != null && artifactHolder.getPlayer().equals(player)) {
-                    setArtifactHolder(null);
-                    ((Artifact) getParent()).placeArtifact(((Artifact) getParent()).getWorld().getWorld());
-                }
-
-                event.setCancelled(true);
-            }
         }
     }
 
@@ -168,6 +162,36 @@ public class ArtifactPlaying extends GamePhase {
         registerTask(taskId);
     }
 
+    private void startRespawnTimer(Person person) {
+        ArtifactRespawn respawn = new ArtifactRespawn(person, Artifact.RESPAWN_TIME, this);
+
+        respawns.put(person, respawn);
+
+        int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(fs(), () -> {
+            respawn.tick();
+        }, 0, 20);
+
+        respawn.setOnRespawn(() -> {
+            Bukkit.getScheduler().cancelTask(taskId);
+            respawns.remove(person);
+        });
+
+        registerTask(taskId);
+    }
+    private void handleDeath(PlayerDeathEvent event) {
+        if (artifactHolder != null && artifactHolder.getPlayer().equals(event.getPlayer())) {
+            setArtifactHolder(null);
+            ((Artifact) getParent()).placeArtifact(((Artifact) getParent()).getWorld().getWorld());
+        }
+
+        event.setCancelled(true);
+
+        Person person = getParent().getTeam().getPerson(event.getPlayer());
+        if(person != null) {
+            startRespawnTimer(person);
+        }
+    }
+
     @Override
     public void onStart() {
         for(int i = 0; i < getParent().getTeam().getPlayers().size(); i++) {
@@ -187,7 +211,13 @@ public class ArtifactPlaying extends GamePhase {
             handleDamage(e);
         }));
 
+        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(PlayerDeathEvent.class, (e) -> {
+            handleDeath(e);
+        }));
 
+        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(FoodLevelChangeEvent.class, (e) -> {
+            e.setCancelled(true);
+        }));
     }
 
     @Override

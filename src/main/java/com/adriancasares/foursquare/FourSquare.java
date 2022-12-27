@@ -5,18 +5,10 @@ import com.adriancasares.foursquare.base.Game;
 import com.adriancasares.foursquare.base.GameInitCommand;
 import com.adriancasares.foursquare.base.Team;
 import com.adriancasares.foursquare.base.command.Command;
-import com.adriancasares.foursquare.base.command.CommandDetails;
-import com.adriancasares.foursquare.base.command.CommandType;
-import com.adriancasares.foursquare.base.command.SubCommand;
 import com.adriancasares.foursquare.base.event.EventSupplier;
-import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 public final class FourSquare extends JavaPlugin {
 

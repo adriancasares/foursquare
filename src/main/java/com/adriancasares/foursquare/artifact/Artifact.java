@@ -9,10 +9,12 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Scoreboard;
 
 public class Artifact extends Game {
 
+    public static final int RESPAWN_TIME = 5;
     public Artifact(Team team) {
         super(team);
     }
@@ -75,6 +77,20 @@ public class Artifact extends Game {
 
             player.getPlayer().setScoreboard(scoreboard);
             player.getPlayer().setGlowing(false);
+            player.getPlayer().setAllowFlight(false);
+            player.getPlayer().setFlying(false);
+            player.getPlayer().setHealth(20);
+            player.getPlayer().setFoodLevel(20);
+            player.getPlayer().setSaturation(20);
+            player.getPlayer().setExhaustion(0);
+            player.getPlayer().setLevel(0);
+            player.getPlayer().setExp(0);
+            player.getPlayer().getInventory().clear();
+            player.getPlayer().getInventory().setArmorContents(null);
+            player.getPlayer().getInventory().setHeldItemSlot(0);
+            player.getPlayer().setInvulnerable(false);
+            player.getPlayer().setInvisible(false);
+
 
             setScoreboard(player, scoreboard);
             initScorecardTeams(scoreboard);
