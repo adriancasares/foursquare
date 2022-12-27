@@ -9,10 +9,7 @@ import com.adriancasares.foursquare.base.util.Position;
 import com.adriancasares.foursquare.base.util.inventory.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -123,6 +120,9 @@ public class ArtifactPlaying extends GamePhase {
             artifactHolder.getPlayer().setGlowing(false);
         }
         if(person != null) {
+            artifactHolder.getPlayer().getWorld().spawnParticle(org.bukkit.Particle.TOTEM, artifactHolder.getPlayer().getLocation(), 100);
+            artifactHolder.getPlayer().playEffect(EntityEffect.TOTEM_RESURRECT);
+            
             person.getPlayer().setGlowing(true);
         }
         artifactHolder = person;
