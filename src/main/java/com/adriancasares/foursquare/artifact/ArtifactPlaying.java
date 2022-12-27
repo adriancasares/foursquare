@@ -16,7 +16,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -29,8 +28,8 @@ import static com.adriancasares.foursquare.FourSquare.fs;
 
 public class ArtifactPlaying extends GamePhase {
 
-    private HashMap<Person, Integer> scores = new HashMap<>();
-    private HashMap<Person, ArtifactRespawn> respawns = new HashMap<>();
+    private final HashMap<Person, Integer> scores = new HashMap<>();
+    private final HashMap<Person, ArtifactRespawn> respawns = new HashMap<>();
 
     private Person artifactHolder = null;
 
@@ -40,15 +39,13 @@ public class ArtifactPlaying extends GamePhase {
     private final ItemBuilder SNOWBALL = new ItemBuilder(Material.SNOWBALL);
     private final ItemBuilder BASE_CHESTPLATE = new ItemBuilder(Material.LEATHER_CHESTPLATE);
 
-    private ScoreboardTemplate scoreboardTemplate = new ScoreboardTemplate(Component.text("First to 90").decorate(TextDecoration.BOLD),
+    private final ScoreboardTemplate scoreboardTemplate = new ScoreboardTemplate(Component.text("First to 90").decorate(TextDecoration.BOLD),
             new ArrayList<>());
 
     public ArtifactPlaying(Artifact parent) {
         super("PLAYING", parent);
 
-        getParent().getTeam().getPlayers().forEach((player) -> {
-            scores.put(player, 0);
-        });
+        getParent().getTeam().getPlayers().forEach((player) -> scores.put(player, 0));
     }
 
 
@@ -67,18 +64,10 @@ public class ArtifactPlaying extends GamePhase {
         meta.setUnbreakable(true);
 
         switch (index) {
-            case 0:
-                meta.setColor(Color.fromRGB(FSColor.TEAM1.value()));
-                break;
-            case 1:
-                meta.setColor(Color.fromRGB(FSColor.TEAM2.value()));
-                break;
-            case 2:
-                meta.setColor(Color.fromRGB(FSColor.TEAM3.value()));
-                break;
-            default:
-                meta.setColor(Color.fromRGB(FSColor.TEAM4.value()));
-                break;
+            case 0 -> meta.setColor(Color.fromRGB(FSColor.TEAM1.value()));
+            case 1 -> meta.setColor(Color.fromRGB(FSColor.TEAM2.value()));
+            case 2 -> meta.setColor(Color.fromRGB(FSColor.TEAM3.value()));
+            default -> meta.setColor(Color.fromRGB(FSColor.TEAM4.value()));
         }
 
         chestplate.setItemMeta(meta);
@@ -87,9 +76,9 @@ public class ArtifactPlaying extends GamePhase {
     }
 
     private void handleDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
-        }
+//        if (event.getEntity() instanceof Player) {
+//            Player player = (Player) event.getEntity();
+//        }
     }
 
     private void updateScoreboard() {
@@ -120,9 +109,9 @@ public class ArtifactPlaying extends GamePhase {
             artifactHolder.getPlayer().setGlowing(false);
         }
         if(person != null) {
-            artifactHolder.getPlayer().getWorld().spawnParticle(org.bukkit.Particle.TOTEM, artifactHolder.getPlayer().getLocation(), 100);
-            artifactHolder.getPlayer().playEffect(EntityEffect.TOTEM_RESURRECT);
-            
+            person.getPlayer().getWorld().spawnParticle(org.bukkit.Particle.TOTEM, artifactHolder.getPlayer().getLocation(), 100);
+            person.getPlayer().playEffect(EntityEffect.TOTEM_RESURRECT);
+
             person.getPlayer().setGlowing(true);
         }
         artifactHolder = person;
@@ -167,9 +156,7 @@ public class ArtifactPlaying extends GamePhase {
 
         respawns.put(person, respawn);
 
-        int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(fs(), () -> {
-            respawn.tick();
-        }, 0, 20);
+        int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(fs(), respawn::tick, 0, 20);
 
         respawn.setOnRespawn(() -> {
             Bukkit.getScheduler().cancelTask(taskId);
@@ -192,6 +179,10 @@ public class ArtifactPlaying extends GamePhase {
         }
     }
 
+    private boolean isRespawning(Person person) {
+        return respawns.containsKey(person);
+    }
+
     @Override
     public void onStart() {
         for(int i = 0; i < getParent().getTeam().getPlayers().size(); i++) {
@@ -203,21 +194,13 @@ public class ArtifactPlaying extends GamePhase {
 
         teleportPlayers();
 
-        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(BlockBreakEvent.class, (e) -> {
-            handleBlockBreak(e);
-        }));
+        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(BlockBreakEvent.class, this::handleBlockBreak));
 
-        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(EntityDamageEvent.class, (e) -> {
-            handleDamage(e);
-        }));
+        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(EntityDamageEvent.class, this::handleDamage));
 
-        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(PlayerDeathEvent.class, (e) -> {
-            handleDeath(e);
-        }));
+        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(PlayerDeathEvent.class, this::handleDeath));
 
-        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(FoodLevelChangeEvent.class, (e) -> {
-            e.setCancelled(true);
-        }));
+        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(FoodLevelChangeEvent.class, (e) -> e.setCancelled(true)));
     }
 
     @Override
