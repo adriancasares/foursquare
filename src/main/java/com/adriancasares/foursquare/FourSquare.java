@@ -73,7 +73,7 @@ public final class FourSquare extends JavaPlugin {
 
     public void setCurrentGame(Game currentGame) {
         if(this.currentGame != null) {
-            this.currentGame.onEnd();
+            this.currentGame.end();
         }
 
         this.currentGame = currentGame;

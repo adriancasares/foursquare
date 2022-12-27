@@ -4,11 +4,7 @@ import com.adriancasares.foursquare.FourSquare;
 import com.adriancasares.foursquare.base.GamePhase;
 import com.adriancasares.foursquare.base.event.EventConsumer;
 import com.adriancasares.foursquare.base.world.WorldWrapper;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.minecraft.util.profiling.jfr.event.WorldLoadFinishedEvent;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.event.world.WorldLoadEvent;
 
 import static com.adriancasares.foursquare.FourSquare.fs;
@@ -21,13 +17,6 @@ public class ArtifactStarting extends GamePhase {
     public ArtifactStarting(Artifact parent) {
         super("STARTING", parent);
 
-    }
-
-
-    private void placeArtifact(World world) {
-        ArtifactMapConfig mapConfig = ((Artifact) getParent()).getMapConfig();
-
-        mapConfig.getArtifactLocation().getBlockLocation(world).getBlock().setType(Material.GOLD_BLOCK);
     }
 
     private void startCountdown() {
@@ -55,7 +44,7 @@ public class ArtifactStarting extends GamePhase {
         EventConsumer load = FourSquare.fs().getEventSupplier().registerConsumer(WorldLoadEvent.class, (e) -> {
             if(world.getName().equals(e.getWorld().getName())) {
                 startCountdown();
-                placeArtifact(e.getWorld());
+                ((Artifact) getParent()).placeArtifact(e.getWorld());
             }
         });
 
@@ -64,8 +53,7 @@ public class ArtifactStarting extends GamePhase {
 
     @Override
     public void onEnd() {
-        deregisterEvents();
-        deregisterTasks();
+
     }
 
     @Override

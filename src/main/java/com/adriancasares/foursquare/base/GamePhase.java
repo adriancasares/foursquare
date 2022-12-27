@@ -35,6 +35,12 @@ public abstract class GamePhase implements EventContainer, ScheduleContainer {
     public abstract void onSpectatorJoin();
     public abstract void onSpectatorLeave();
 
+    public void end() {
+        onEnd();
+        deregisterEvents();
+        deregisterTasks();
+    }
+
     @Override
     public void registerEvent(EventConsumer consumer) {
         events.add(consumer);

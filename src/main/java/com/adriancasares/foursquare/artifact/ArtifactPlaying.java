@@ -34,14 +34,11 @@ public class ArtifactPlaying extends GamePhase {
 
     private Person artifactHolder = null;
 
-    private ItemBuilder STONE_SWORD = new ItemBuilder(Material.STONE_SWORD);
-    private ItemBuilder IRON_PICKAXE = new ItemBuilder(Material.IRON_PICKAXE);
-
-    private ItemBuilder SCAFFOLDING = new ItemBuilder(Material.WHITE_TERRACOTTA, "Scaffolding");
-
-    private ItemBuilder SNOWBALL = new ItemBuilder(Material.SNOWBALL);
-
-    private ItemBuilder BASE_CHESTPLATE = new ItemBuilder(Material.LEATHER_CHESTPLATE);
+    private final ItemBuilder STONE_SWORD = new ItemBuilder(Material.STONE_SWORD);
+    private final ItemBuilder IRON_PICKAXE = new ItemBuilder(Material.IRON_PICKAXE);
+    private final ItemBuilder SCAFFOLDING = new ItemBuilder(Material.WHITE_TERRACOTTA, "Scaffolding");
+    private final ItemBuilder SNOWBALL = new ItemBuilder(Material.SNOWBALL);
+    private final ItemBuilder BASE_CHESTPLATE = new ItemBuilder(Material.LEATHER_CHESTPLATE);
 
     private ScoreboardTemplate scoreboardTemplate = new ScoreboardTemplate(Component.text("First to 90").decorate(TextDecoration.BOLD),
             new ArrayList<>());
