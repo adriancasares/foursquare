@@ -59,7 +59,7 @@ public class Team {
 
             spectators.add(
                     new Person(
-                            person, false
+                            person, false, -1
                     )
             );
         }
@@ -74,7 +74,7 @@ public class Team {
         for(Player player : Bukkit.getOnlinePlayers()) {
             if(++i > FourSquare.MAX_TEAM_PLAYERS) break;
 
-            team.getPlayers().add(new Person(player, true));
+            team.getPlayers().add(new Person(player, true, i - 1));
         }
 
         if(i > FourSquare.MAX_TEAM_PLAYERS) {

@@ -6,6 +6,7 @@ import com.adriancasares.foursquare.base.Person;
 import com.adriancasares.foursquare.base.scoreboard.ScoreboardTemplate;
 import com.adriancasares.foursquare.base.util.FSColor;
 import com.adriancasares.foursquare.base.util.Position;
+import com.adriancasares.foursquare.base.util.chat.MessageTemplate;
 import com.adriancasares.foursquare.base.util.inventory.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -50,7 +51,9 @@ public class ArtifactPlaying extends GamePhase {
 
 
 
-    private void setInventory(Player player, int index) {
+    private void setInventory(Person person) {
+        Player player = person.getPlayer();
+
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
 
@@ -63,12 +66,9 @@ public class ArtifactPlaying extends GamePhase {
         LeatherArmorMeta meta = (LeatherArmorMeta) chestplate.getItemMeta();
         meta.setUnbreakable(true);
 
-        switch (index) {
-            case 0 -> meta.setColor(Color.fromRGB(FSColor.TEAM1.value()));
-            case 1 -> meta.setColor(Color.fromRGB(FSColor.TEAM2.value()));
-            case 2 -> meta.setColor(Color.fromRGB(FSColor.TEAM3.value()));
-            default -> meta.setColor(Color.fromRGB(FSColor.TEAM4.value()));
-        }
+        meta.setColor(Color.fromRGB(
+                person.getColor().getPrimary().value()
+        ));
 
         chestplate.setItemMeta(meta);
 
@@ -109,7 +109,7 @@ public class ArtifactPlaying extends GamePhase {
             artifactHolder.getPlayer().setGlowing(false);
         }
         if(person != null) {
-            person.getPlayer().getWorld().spawnParticle(org.bukkit.Particle.TOTEM, artifactHolder.getPlayer().getLocation(), 100);
+            person.getPlayer().getWorld().spawnParticle(org.bukkit.Particle.TOTEM, person.getPlayer().getLocation(), 100);
             person.getPlayer().playEffect(EntityEffect.TOTEM_RESURRECT);
 
             person.getPlayer().setGlowing(true);
@@ -127,6 +127,11 @@ public class ArtifactPlaying extends GamePhase {
             if(person != null) {
                 setArtifactHolder(person);
                 updateScoreboard();
+
+                new MessageTemplate(person.getColor())
+                        .appendImportant(person.getLatestName())
+                        .appendText(" picked up the artifact.")
+                        .sendTo(getParent());
             }
 
             event.getBlock().setType(Material.AIR);
@@ -187,7 +192,7 @@ public class ArtifactPlaying extends GamePhase {
     public void onStart() {
         for(int i = 0; i < getParent().getTeam().getPlayers().size(); i++) {
             Person person = getParent().getTeam().getPlayers().get(i);
-            setInventory(person.getPlayer(), i);
+            setInventory(person);
         }
 
         startArtifactTimer();

@@ -1,5 +1,7 @@
 package com.adriancasares.foursquare.base;
 
+import com.adriancasares.foursquare.base.util.FSColor;
+import org.bukkit.Color;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -16,6 +18,7 @@ public class Person {
 
     private String latestName;
 
+    private int index;
     public Player getPlayer() {
         return player;
     }
@@ -44,12 +47,13 @@ public class Person {
         return isPlayer && online;
     }
 
-    public Person(Player player, boolean isPlayer) {
+    public Person(Player player, boolean isPlayer, int index) {
         this.player = player;
         this.isPlayer = isPlayer;
         this.uuid = player.getUniqueId();
         this.latestName = player.getName();
         this.online = player.isOnline();
+        this.index = index;
     }
 
     public UUID getUuid() {
@@ -66,5 +70,26 @@ public class Person {
 
     public void setLatestName(String latestName) {
         this.latestName = latestName;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public FSColor getColor() {
+        int index = (int) (Math.random() * 5) - 1;
+
+        if(index == -1) {
+            return FSColor.SPECTATOR;
+        }
+        else if(index == 0) {
+            return FSColor.TEAM1;
+        } else if(index == 1) {
+            return FSColor.TEAM2;
+        } else if(index == 2) {
+            return FSColor.TEAM3;
+        } else {
+            return FSColor.TEAM4;
+        }
     }
 }
