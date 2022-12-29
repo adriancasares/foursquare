@@ -13,10 +13,6 @@ public abstract class GamePhase implements EventContainer, ScheduleContainer {
 
     private String name;
 
-    private ArrayList<EventConsumer> events = new ArrayList<>();
-
-    private ArrayList<Integer> tasks = new ArrayList<>();
-
     public GamePhase(String name, Game parent) {
         this.name = name;
         this.parent = parent;
@@ -39,38 +35,6 @@ public abstract class GamePhase implements EventContainer, ScheduleContainer {
         onEnd();
         deregisterEvents();
         deregisterTasks();
-    }
-
-    @Override
-    public void registerEvent(EventConsumer consumer) {
-        events.add(consumer);
-    }
-
-    @Override
-    public void deregisterEvents() {
-        events.forEach(EventConsumer::cancel);
-    }
-
-    @Override
-    public ArrayList<EventConsumer> getEvents() {
-        return events;
-    }
-
-    @Override
-    public void registerTask(int taskId) {
-        tasks.add(taskId);
-    }
-
-    @Override
-    public void deregisterTasks() {
-        for(int taskId : tasks) {
-            Bukkit.getScheduler().cancelTask(taskId);
-        }
-    }
-
-    @Override
-    public ArrayList<Integer> getTasks() {
-        return tasks;
     }
 
     public Game getParent() {
