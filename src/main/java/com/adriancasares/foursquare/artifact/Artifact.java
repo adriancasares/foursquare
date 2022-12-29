@@ -1,14 +1,19 @@
 package com.adriancasares.foursquare.artifact;
 
+import com.adriancasares.foursquare.FourSquare;
 import com.adriancasares.foursquare.base.Game;
 import com.adriancasares.foursquare.base.Person;
 import com.adriancasares.foursquare.base.Team;
+import com.adriancasares.foursquare.base.event.EventConsumer;
 import com.adriancasares.foursquare.base.util.FSColor;
 import com.adriancasares.foursquare.base.world.WorldWrapper;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Scoreboard;
 
@@ -95,6 +100,19 @@ public class Artifact extends Game {
             setScoreboard(player, scoreboard);
             initScorecardTeams(scoreboard);
         });
+
+        EventConsumer blockPlace = FourSquare.fs().getEventSupplier().registerConsumer(BlockPlaceEvent.class, (e) -> {
+            if (e.getBlock().getType() != Material.WHITE_TERRACOTTA) {
+                e.setCancelled(true);
+            }
+        });
+        EventConsumer blockBreak = FourSquare.fs().getEventSupplier().registerConsumer(BlockBreakEvent.class, (e) -> {
+            e.setCancelled(true);
+        });
+
+        registerEvent(blockPlace);
+        registerEvent(blockBreak);
+
     }
 
     public void placeArtifact(World world) {

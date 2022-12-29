@@ -9,6 +9,9 @@ import com.adriancasares.foursquare.base.util.Position;
 import com.adriancasares.foursquare.base.util.chat.MessageTemplate;
 import com.adriancasares.foursquare.base.util.inventory.ItemBuilder;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -17,13 +20,17 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.adriancasares.foursquare.FourSquare.fs;
 
@@ -119,12 +126,11 @@ public class ArtifactPlaying extends GamePhase {
     }
 
     private void handleBlockBreak(BlockBreakEvent event) {
-        event.setCancelled(true);
 
-        if(event.getBlock().getType() == Material.GOLD_BLOCK) {
+        if (event.getBlock().getType() == Material.GOLD_BLOCK) {
             Person person = getParent().getTeam().getPerson(event.getPlayer());
 
-            if(person != null) {
+            if (person != null) {
                 setArtifactHolder(person);
                 updateScoreboard();
 
@@ -133,8 +139,11 @@ public class ArtifactPlaying extends GamePhase {
                         .appendText(" picked up the artifact.")
                         .sendTo(getParent());
             }
+        }
 
+        if (event.getBlock().getType() == Material.WHITE_TERRACOTTA) {
             event.getBlock().setType(Material.AIR);
+            event.getPlayer().getInventory().addItem(SCAFFOLDING.build(1));
         }
     }
 
