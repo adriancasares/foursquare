@@ -98,7 +98,7 @@ public abstract class Command {
     }
 
     public List<String> getAllNames() {
-        List<String> all = new ArrayList<String>(bukkitCommand.getAliases());
+        List<String> all = new ArrayList<>(bukkitCommand.getAliases());
         all.add(bukkitCommand.getName());
         return all;
     }

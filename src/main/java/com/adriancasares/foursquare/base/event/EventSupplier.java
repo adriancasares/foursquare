@@ -13,9 +13,13 @@ public class EventSupplier {
     public EventSupplier(Plugin plugin){
         this.plugin = plugin;
     }
-    public <T extends Event> EventConsumer<T> registerConsumer(Class<T> type, EventPriority priority, Consumer<T> consumer){
-        EventConsumer<T> newConsumer = new EventConsumer<>(type, consumer, priority,this);
+    public <T extends Event> EventConsumer<T> registerConsumer(Class<T> type, EventPriority priority, boolean ignoreCancelled, Consumer<T> consumer){
+        EventConsumer<T> newConsumer = new EventConsumer<>(type, consumer, priority, ignoreCancelled, this);
         return newConsumer;
+    }
+
+    public <T extends Event> EventConsumer<T> registerConsumer(Class<T> type, EventPriority priority, Consumer<T> consumer){
+        return registerConsumer(type, priority, false, consumer);
     }
 
     public <T extends Event> EventConsumer<T> registerConsumer(Class<T> type, Consumer<T> consumer){

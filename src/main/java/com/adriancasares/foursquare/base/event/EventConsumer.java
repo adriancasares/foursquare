@@ -14,17 +14,20 @@ public class EventConsumer<T extends Event> implements Listener {
     private Class<T> type;
     private EventPriority priority;
 
-    public EventConsumer(Class<T> type, Consumer<T> consumer, EventPriority priority, EventSupplier parent){
+    private boolean ignoreCancelled;
+
+    public EventConsumer(Class<T> type, Consumer<T> consumer, EventPriority priority, boolean ignoreCancelled, EventSupplier parent){
         this.type = type;
         this.consumer = consumer;
         this.parent = parent;
         this.priority = priority;
+        this.ignoreCancelled = ignoreCancelled;
 
         try{
             parent.getPlugin().getServer().getPluginManager().registerEvent(type, this, priority, (listener, event) -> {
                 if(type.isInstance(event)) //should always be true :)
                     accept((T)event);
-            }, parent.getPlugin());
+            }, parent.getPlugin(), ignoreCancelled);
         }
         catch(Exception e){
             parent.getPlugin().getLogger().log(Level.SEVERE, "Failed to dynamically register event", e);

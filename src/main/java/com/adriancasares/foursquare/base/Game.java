@@ -18,11 +18,7 @@ public abstract class Game implements EventContainer, ScheduleContainer {
 
     private Team team;
 
-    private ArrayList<EventConsumer> events = new ArrayList<>();
-
     private ArrayList<WorldWrapper> worlds = new ArrayList<>();
-
-    private ArrayList<Integer> tasks = new ArrayList<>();
 
     private HashMap<Person, Scoreboard> scoreboards = new HashMap<>();
 
@@ -73,16 +69,6 @@ public abstract class Game implements EventContainer, ScheduleContainer {
         return team;
     }
 
-    public void registerEvent(EventConsumer consumer) {
-        events.add(consumer);
-    }
-
-    public void deregisterEvents() {
-        for(EventConsumer event : events) {
-            event.cancel();
-        }
-    }
-
     public void end() {
         onEndPhase();
         onEnd();
@@ -115,31 +101,8 @@ public abstract class Game implements EventContainer, ScheduleContainer {
         this.currentPhase.onStart();
     }
 
-    public boolean inPhase(String phaseName) {
-        return currentPhase.getName().equals(phaseName);
-    }
-
-    @Override
-    public ArrayList<EventConsumer> getEvents() {
-        return events;
-    }
-
-    @Override
-    public void registerTask(int taskId) {
-        tasks.add(taskId);
-    }
-
-    @Override
-    public void deregisterTasks() {
-        System.out.println("Cancelling tasks, size: " + tasks.size());
-        for(int taskId : tasks) {
-            Bukkit.getScheduler().cancelTask(taskId);
-        }
-    }
-
-    @Override
-    public ArrayList<Integer> getTasks() {
-        return tasks;
+    public boolean inPhase(Class<? extends GamePhase> phase) {
+        return phase.isAssignableFrom(currentPhase.getClass());
     }
 
     public void setScoreboard(Person person, Scoreboard scoreboard) {
