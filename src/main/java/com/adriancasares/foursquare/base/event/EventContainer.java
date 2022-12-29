@@ -27,7 +27,8 @@ public interface EventContainer {
         List<EventConsumer> result = eventConsumers.get(this);
 
         if(result == null){
-            result = eventConsumers.put(this, new ArrayList<>());
+            result = new ArrayList<>();
+            eventConsumers.put(this, result);
         }
 
         return result;

@@ -30,7 +30,8 @@ public interface ScheduleContainer {
         List<Integer> result = tasks.get(this);
 
         if(result == null){
-            result = tasks.put(this, new ArrayList<>());
+            result = new ArrayList<>();
+            tasks.put(this, result);
         }
 
         return result;
