@@ -9,22 +9,22 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-
+@SuppressWarnings("unused")
 public class ArtifactMapConfig extends GameMapConfig {
-    Position artifact;
-    Position spawnpoint1;
-    Position spawnpoint2;
-    Position spawnpoint3;
-    Position spawnpoint4;
-    Position respawnpoint1;
-    Position respawnpoint2;
-    Position respawnpoint3;
-    Position respawnpoint4;
-    Position spectatorSpawn;
-    Position lobbySpawn; // TODO lobby in a different world?
-    int cageY;
-    int upperY;
-    int lowerY;
+    private Position artifact;
+    private Position spawnpoint1;
+    private Position spawnpoint2;
+    private Position spawnpoint3;
+    private Position spawnpoint4;
+    private Position respawnpoint1;
+    private Position respawnpoint2;
+    private Position respawnpoint3;
+    private Position respawnpoint4;
+    private Position spectatorSpawn;
+    private Position lobbySpawn; // TODO lobby in a different world?
+    private int cageY;
+    private int upperY;
+    private int lowerY;
 
     public ArtifactMapConfig(Position artifact, Position spawnpoint1, Position spawnpoint2, Position spawnpoint3, Position spawnpoint4, Position respawnpoint1, Position respawnpoint2, Position respawnpoint3, Position respawnpoint4, Position spectatorSpawn, Position lobbySpawn, int cageY, int upperY, int lowerY) {
         this.artifact = artifact;
@@ -98,5 +98,117 @@ public class ArtifactMapConfig extends GameMapConfig {
     @Override
     public String getLinkedGameName() {
         return "Artifact";
+    }
+
+    public Position getArtifact() {
+        return artifact;
+    }
+
+    public void setArtifact(Position artifact) {
+        this.artifact = artifact;
+    }
+
+    public Position getSpawnpoint1() {
+        return spawnpoint1;
+    }
+
+    public void setSpawnpoint1(Position spawnpoint1) {
+        this.spawnpoint1 = spawnpoint1;
+    }
+
+    public Position getSpawnpoint2() {
+        return spawnpoint2;
+    }
+
+    public void setSpawnpoint2(Position spawnpoint2) {
+        this.spawnpoint2 = spawnpoint2;
+    }
+
+    public Position getSpawnpoint3() {
+        return spawnpoint3;
+    }
+
+    public void setSpawnpoint3(Position spawnpoint3) {
+        this.spawnpoint3 = spawnpoint3;
+    }
+
+    public Position getSpawnpoint4() {
+        return spawnpoint4;
+    }
+
+    public void setSpawnpoint4(Position spawnpoint4) {
+        this.spawnpoint4 = spawnpoint4;
+    }
+
+    public Position getRespawnpoint1() {
+        return respawnpoint1;
+    }
+
+    public void setRespawnpoint1(Position respawnpoint1) {
+        this.respawnpoint1 = respawnpoint1;
+    }
+
+    public Position getRespawnpoint2() {
+        return respawnpoint2;
+    }
+
+    public void setRespawnpoint2(Position respawnpoint2) {
+        this.respawnpoint2 = respawnpoint2;
+    }
+
+    public Position getRespawnpoint3() {
+        return respawnpoint3;
+    }
+
+    public void setRespawnpoint3(Position respawnpoint3) {
+        this.respawnpoint3 = respawnpoint3;
+    }
+
+    public Position getRespawnpoint4() {
+        return respawnpoint4;
+    }
+
+    public void setRespawnpoint4(Position respawnpoint4) {
+        this.respawnpoint4 = respawnpoint4;
+    }
+
+    public Position getSpectatorSpawn() {
+        return spectatorSpawn;
+    }
+
+    public void setSpectatorSpawn(Position spectatorSpawn) {
+        this.spectatorSpawn = spectatorSpawn;
+    }
+
+    public Position getLobbySpawn() {
+        return lobbySpawn;
+    }
+
+    public void setLobbySpawn(Position lobbySpawn) {
+        this.lobbySpawn = lobbySpawn;
+    }
+
+    public int getCageY() {
+        return cageY;
+    }
+
+    public void setCageY(int cageY) {
+        this.cageY = cageY;
+    }
+
+    public int getUpperY() {
+        return upperY;
+    }
+
+    public void setUpperY(int upperY) {
+        this.upperY = upperY;
+    }
+
+    public int getLowerY() {
+        return lowerY;
+    }
+
+    public void setLowerY(int lowerY) {
+        this.lowerY = lowerY;
     }
 }

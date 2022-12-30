@@ -57,16 +57,8 @@ public class GameMap {
             mapName = config.getString("map_name");
             mapCreator = config.getString("map_creator", "");
             gameMapConfigs = new ArrayList<>();
-            if(config.getConfigurationSection("game_configs") != null){
-                System.out.println("LALALALA "  + mapName);
-                // Get all game configs under game_configs (as key)
-                for(String key : config.getConfigurationSection("game_configs").getKeys(false)){
-                    // Get what game this config is for (Artifact, etc.)
-                    Class<? extends GameMapConfig> gameConfigType = GameMapConfig.getConfigClassForGame(config.getString(key + ".game"));
-                    // Get the game config for this game through deserialization
-                    GameMapConfig gameMapConfig = config.getSerializable(key, gameConfigType);
-                    gameMapConfigs.add(gameMapConfig);
-                }
+            if(config.getList("game_configs") != null){
+                gameMapConfigs.addAll((List<GameMapConfig>) config.getList("game_configs"));
             }
         }
         catch(ClassCastException | NullPointerException ex){

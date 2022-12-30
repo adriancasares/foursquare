@@ -1,3 +1,84 @@
-map_name: 'Beehive'
+map_name: Beehive
 map_creator: ''
 game_configs:
+  - ==: com.adriancasares.foursquare.artifact.ArtifactMapConfig
+    lowerY: 55
+    respawnpoint1:
+      ==: com.adriancasares.foursquare.base.util.Position
+      x: 0
+      y: 64
+      z: 23
+      pitch: 0
+      yaw: -180
+    respawnpoint2:
+      ==: com.adriancasares.foursquare.base.util.Position
+      x: -23
+      y: 64
+      z: 0
+      pitch: 0
+      yaw: -90
+    respawnpoint3:
+      ==: com.adriancasares.foursquare.base.util.Position
+      x: 0
+      y: 64
+      z: -23
+      pitch: 0
+      yaw: 0
+    respawnpoint4:
+      ==: com.adriancasares.foursquare.base.util.Position
+      x: 23
+      y: 64
+      z: 0
+      pitch: 0
+      yaw: 90
+    spawnpoint1:
+      ==: com.adriancasares.foursquare.base.util.Position
+      x: 0
+      y: 64
+      z: 23
+      pitch: 0
+      yaw: -180
+    spawnpoint2:
+      ==: com.adriancasares.foursquare.base.util.Position
+      x: -23
+      y: 64
+      z: 0
+      pitch: 0
+      yaw: -90
+    spawnpoint3:
+      ==: com.adriancasares.foursquare.base.util.Position
+      x: 0
+      y: 64
+      z: -23
+      pitch: 0
+      yaw: 0
+    spawnpoint4:
+      ==: com.adriancasares.foursquare.base.util.Position
+      x: 23
+      y: 64
+      z: 0
+      pitch: 0
+      yaw: 90
+    artifact:
+      ==: com.adriancasares.foursquare.base.util.Position
+      x: 0
+      y: 63
+      z: 0
+      pitch: 0
+      yaw: 0
+    upperY: 73
+    spectatorSpawn:
+      ==: com.adriancasares.foursquare.base.util.Position
+      x: 0
+      y: 63
+      z: 0
+      pitch: 0
+      yaw: 0
+    lobbySpawn:
+      ==: com.adriancasares.foursquare.base.util.Position
+      x: 0
+      y: 63
+      z: 0
+      pitch: 0
+      yaw: 0
+    cageY: 69
