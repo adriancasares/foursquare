@@ -17,10 +17,6 @@ public class Position implements ConfigurationSerializable {
     private int yaw;
     private int pitch;
 
-    static {
-        ConfigurationSerialization.registerClass(Position.class);
-    }
-
     public Position(int x, int y, int z, int yaw, int pitch) {
         this.x = x;
         this.y = y;

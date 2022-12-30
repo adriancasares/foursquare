@@ -19,7 +19,7 @@ public class Artifact extends Game {
 
     private GameMap world;
 
-    private ArtifactMapConfig mapConfig = ArtifactMapConfig.createDefault();
+//    private ArtifactMapConfig mapConfig = ArtifactMapConfig.createDefault();
 
     private void initScorecardTeams(Scoreboard scoreboard) {
         org.bukkit.scoreboard.Team team1 = scoreboard.registerNewTeam("team1");
@@ -96,9 +96,9 @@ public class Artifact extends Game {
     }
 
     public void placeArtifact(World world) {
-        ArtifactMapConfig mapConfig = getMapConfig();
+//        ArtifactMapConfig mapConfig = getMapConfig();
 
-        mapConfig.getArtifactLocation().getBlockLocation(world).getBlock().setType(Material.GOLD_BLOCK);
+//        mapConfig.getArtifactLocation().getBlockLocation(world).getBlock().setType(Material.GOLD_BLOCK);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class Artifact extends Game {
         return world;
     }
 
-    public ArtifactMapConfig getMapConfig() {
-        return mapConfig;
-    }
+//    public ArtifactMapConfig getMapConfig() {
+//        return mapConfig;
+//    }
 }

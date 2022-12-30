@@ -121,7 +121,7 @@ public abstract class Game implements EventContainer, ScheduleContainer {
         return gameId;
     }
 
-    public String getGameName() {
+    public String getName() {
         return gameName;
     }
 }

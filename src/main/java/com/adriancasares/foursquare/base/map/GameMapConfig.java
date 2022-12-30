@@ -1,5 +1,6 @@
 package com.adriancasares.foursquare.base.map;
 
+import com.adriancasares.foursquare.base.Game;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.util.HashMap;

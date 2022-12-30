@@ -1,60 +1,102 @@
 package com.adriancasares.foursquare.artifact;
 
+import com.adriancasares.foursquare.FourSquare;
+import com.adriancasares.foursquare.base.map.GameMapConfig;
 import com.adriancasares.foursquare.base.util.Position;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
-public class ArtifactMapConfig {
+public class ArtifactMapConfig extends GameMapConfig {
+    Position artifact;
+    Position spawnpoint1;
+    Position spawnpoint2;
+    Position spawnpoint3;
+    Position spawnpoint4;
+    Position respawnpoint1;
+    Position respawnpoint2;
+    Position respawnpoint3;
+    Position respawnpoint4;
+    Position spectatorSpawn;
+    Position lobbySpawn; // TODO lobby in a different world?
+    int cageY;
+    int upperY;
+    int lowerY;
 
-    private ArrayList<Position> playerSpawns = new ArrayList<>();
-    private ArrayList<Position> playerRespawns = new ArrayList<>();
-    private Position spectatorSpawn;
-    private Position artifactLocation;
-
-    public ArtifactMapConfig() {
-
+    public ArtifactMapConfig(Position artifact, Position spawnpoint1, Position spawnpoint2, Position spawnpoint3, Position spawnpoint4, Position respawnpoint1, Position respawnpoint2, Position respawnpoint3, Position respawnpoint4, Position spectatorSpawn, Position lobbySpawn, int cageY, int upperY, int lowerY) {
+        this.artifact = artifact;
+        this.spawnpoint1 = spawnpoint1;
+        this.spawnpoint2 = spawnpoint2;
+        this.spawnpoint3 = spawnpoint3;
+        this.spawnpoint4 = spawnpoint4;
+        this.respawnpoint1 = respawnpoint1;
+        this.respawnpoint2 = respawnpoint2;
+        this.respawnpoint3 = respawnpoint3;
+        this.respawnpoint4 = respawnpoint4;
+        this.spectatorSpawn = spectatorSpawn;
+        this.lobbySpawn = lobbySpawn;
+        this.cageY = cageY;
+        this.upperY = upperY;
+        this.lowerY = lowerY;
     }
 
-    public void addPlayerSpawn(Position position) {
-        playerSpawns.add(position);
-    }
+    public ArtifactMapConfig(Map<String, Object> deserialize){
+        try{
+            spawnpoint1 = (Position) deserialize.get("spawnpoint1");
+            spawnpoint2 = (Position) deserialize.get("spawnpoint2");
+            spawnpoint3 = (Position) deserialize.get("spawnpoint3");
+            spawnpoint4 = (Position) deserialize.get("spawnpoint4");
 
-    public void addPlayerRespawn(Position position) {
-        playerRespawns.add(position);
-    }
+            respawnpoint1 = (Position) deserialize.get("respawnpoint1");
+            respawnpoint2 = (Position) deserialize.get("respawnpoint2");
+            respawnpoint3 = (Position) deserialize.get("respawnpoint3");
+            respawnpoint4 = (Position) deserialize.get("respawnpoint4");
 
-    public void setSpectatorSpawn(Position position) {
-        spectatorSpawn = position;
-    }
+            spectatorSpawn = (Position) deserialize.get("spectatorSpawn");
+            lobbySpawn = (Position) deserialize.get("lobbySpawn");
 
-    public void setArtifactLocation(Position position) {
-        artifactLocation = position;
-    }
+            artifact = (Position) deserialize.get("artifact");
 
-    public ArrayList<Position> getPlayerSpawns() {
-        return playerSpawns;
-    }
-
-    public ArrayList<Position> getPlayerRespawns() {
-        return playerRespawns;
-    }
-
-    public Position getSpectatorSpawn() {
-        return spectatorSpawn;
-    }
-
-    public Position getArtifactLocation() {
-        return artifactLocation;
-    }
-
-    public static ArtifactMapConfig createDefault() {
-        ArtifactMapConfig config = new ArtifactMapConfig();
-        for (int i = 0; i < 4; i++) {
-            config.addPlayerSpawn(new Position(0, 5, 0));
-            config.addPlayerRespawn(new Position(0, 5, 0));
+            cageY = (int) deserialize.get("cageY");
+            upperY = (int) deserialize.get("upperY");
+            lowerY = (int) deserialize.get("lowerY");
         }
-        config.setSpectatorSpawn(new Position(0, 5, 0));
-        config.setArtifactLocation(new Position(0, 5, 0));
-        return config;
+        catch(ClassCastException | NullPointerException ex){
+            throw new IllegalArgumentException("Failed to build ArtifactMapConfig object from configuration: corrupted data file!", ex);
+        }
+    }
+
+    @Override
+    public @NotNull Map<String, Object> serialize() {
+        // TODO make sure that all the Position objects are serialized later before storing in config
+        Map<String, Object> builder = new HashMap<>();
+        builder.put("spawnpoint1", spawnpoint1);
+        builder.put("spawnpoint2", spawnpoint2);
+        builder.put("spawnpoint3", spawnpoint3);
+        builder.put("spawnpoint4", spawnpoint4);
+
+        builder.put("respawnpoint1", respawnpoint1);
+        builder.put("respawnpoint2", respawnpoint2);
+        builder.put("respawnpoint3", respawnpoint3);
+        builder.put("respawnpoint4", respawnpoint4);
+
+        builder.put("spectatorSpawn", spectatorSpawn);
+        builder.put("lobbySpawn", lobbySpawn);
+
+        builder.put("artifact", artifact);
+
+        builder.put("cageY", cageY);
+        builder.put("upperY", upperY);
+        builder.put("lowerY", lowerY);
+
+        return builder;
+    }
+
+    @Override
+    public String getLinkedGameName() {
+        return "Artifact";
     }
 }

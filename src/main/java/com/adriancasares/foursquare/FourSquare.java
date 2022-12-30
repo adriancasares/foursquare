@@ -1,5 +1,6 @@
 package com.adriancasares.foursquare;
 
+import com.adriancasares.foursquare.artifact.ArtifactMapConfig;
 import com.adriancasares.foursquare.base.AdminUtilCommand;
 import com.adriancasares.foursquare.base.Game;
 import com.adriancasares.foursquare.base.GameInitCommand;
@@ -7,6 +8,8 @@ import com.adriancasares.foursquare.base.Team;
 import com.adriancasares.foursquare.base.command.Command;
 import com.adriancasares.foursquare.base.event.EventSupplier;
 import com.adriancasares.foursquare.base.data.DataManager;
+import com.adriancasares.foursquare.base.map.GameMapConfig;
+import com.adriancasares.foursquare.base.map.WorldManager;
 import com.adriancasares.foursquare.base.util.Position;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -29,6 +32,15 @@ public final class FourSquare extends JavaPlugin {
     private EventSupplier eventSupplier;
 
     private DataManager dataManager;
+    private WorldManager worldManager;
+
+    @Override
+    public void onLoad(){
+        GameMapConfig.register("Artifact", ArtifactMapConfig.class);
+
+        ConfigurationSerialization.registerClass(Position.class);
+        ConfigurationSerialization.registerClass(ArtifactMapConfig.class);
+    }
 
     @Override
     public void onEnable() {
@@ -36,11 +48,14 @@ public final class FourSquare extends JavaPlugin {
         fourSquare = this;
         commandMap = new HashMap<>();
         eventSupplier = new EventSupplier(this);
+        worldManager = new WorldManager();
 
         new GameInitCommand().register();
         new AdminUtilCommand().register();
 
         this.dataManager = new DataManager();
+
+
     }
 
     @Override
@@ -90,5 +105,9 @@ public final class FourSquare extends JavaPlugin {
 
     public DataManager getDataManager() {
         return dataManager;
+    }
+
+    public WorldManager getWorldManager() {
+        return worldManager;
     }
 }

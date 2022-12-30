@@ -1,9 +1,11 @@
 package com.adriancasares.foursquare.base.map;
 
+import com.adriancasares.foursquare.base.util.Position;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -47,6 +49,7 @@ public class GameMap {
     public void loadData() throws IllegalStateException {
         // 1: find config file
         File mapConfigFile = getMapConfigFile();
+
         FileConfiguration config = YamlConfiguration.loadConfiguration(mapConfigFile);
 
         // 2: read all data from config file
@@ -54,7 +57,8 @@ public class GameMap {
             mapName = config.getString("map_name");
             mapCreator = config.getString("map_creator", "");
             gameMapConfigs = new ArrayList<>();
-            if(config.getList("game_configs") != null){
+            if(config.getConfigurationSection("game_configs") != null){
+                System.out.println("LALALALA "  + mapName);
                 // Get all game configs under game_configs (as key)
                 for(String key : config.getConfigurationSection("game_configs").getKeys(false)){
                     // Get what game this config is for (Artifact, etc.)
@@ -72,14 +76,19 @@ public class GameMap {
 
     public void saveData(){
         // TODO implement saving this data from the GameMap back to the foursquare_conf.yml file
-        Map<String, Object> builder = new HashMap<>();
-        builder.put("map_name", mapName);
-        builder.put("map_creator", mapCreator);
-        builder.put("game_configs", gameMapConfigs);
-
         File configFile = getMapConfigFile();
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
-        config.set("", builder);
+        config.set("map_name", mapName);
+        config.set("map_creator", mapCreator);
+        config.set("game_configs", gameMapConfigs);
+        config.set("map_name", mapName);
+
+        try{
+            config.save(configFile);
+        }
+        catch(IOException ex){
+            ex.printStackTrace();
+        }
     }
 
     public File getMapConfigFile(){
@@ -93,29 +102,6 @@ public class GameMap {
         }
 
         return mapConfigFile;
-    }
-
-    public World createWorld(UUID worldId){
-        String worldName = "gameworld_" + worldId.toString();
-        File target = Path.of(worldName).toFile();
-
-        try {
-            FileUtils.copyDirectory(templateFolder, target);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-
-        WorldCreator worldcreator = new WorldCreator(worldName);
-        worldcreator.type(WorldType.FLAT);
-        World world = Bukkit.createWorld(worldcreator);
-        world.getWorldBorder().setSize(192.0D);
-        world.setDifficulty(Difficulty.HARD);
-        world.setWeatherDuration(2147483647);
-        world.setGameRuleValue("doMobSpawning", "false");
-        world.setGameRuleValue("doDaylightCycle", "false");
-        world.setFullTime(0L);
-
-        return world;
     }
 
     public File getTemplateFolder() {

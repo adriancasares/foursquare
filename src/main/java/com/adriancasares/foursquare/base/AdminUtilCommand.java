@@ -1,11 +1,13 @@
 package com.adriancasares.foursquare.base;
 
 import com.adriancasares.foursquare.FourSquare;
+import com.adriancasares.foursquare.artifact.ArtifactMapConfig;
 import com.adriancasares.foursquare.base.command.Command;
 import com.adriancasares.foursquare.base.command.CommandDetails;
 import com.adriancasares.foursquare.base.command.CommandType;
 import com.adriancasares.foursquare.base.command.SubCommand;
 import com.adriancasares.foursquare.base.map.GameMap;
+import com.adriancasares.foursquare.base.util.Position;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -47,7 +49,7 @@ public class AdminUtilCommand extends Command {
                             return;
                         }
 
-                        World newWorld = selected.createWorld(UUID.randomUUID());
+                        World newWorld = FourSquare.fs().getWorldManager().createWorld(selected, UUID.randomUUID().toString());
                         Player p = (Player)details.getSender();
                         p.teleport(new Location(newWorld, 0, 100, 0 ));
                     }
@@ -62,8 +64,32 @@ public class AdminUtilCommand extends Command {
 
                         details.getSender().sendMessage("Maps:\n" + maps);
                     }
-                }
+                },
+                new SubCommand("setmapdata", Arrays.asList(), 0){
+                    @Override
+                    public void runBaseCall(CommandDetails details) {
+                        GameMap selected = null;
 
+                        for(GameMap map : FourSquare.fs().getDataManager().getMaps()){
+                            if(map.getMapName().equalsIgnoreCase("Beehive")){
+                                selected = map;
+                                break;
+                            }
+                        }
+
+                        assert selected != null;
+
+                        Position p = new Position(0, 0, 0);
+                        selected.getGameMapConfigs().add(
+                                new ArtifactMapConfig(
+                                        p, p, p, p, p, p, p, p, p, p, p, 100, 120, 80
+                                ));
+
+                        selected.saveData();
+
+                        details.getSender().sendMessage("Done");
+                    }
+                }
         );
 
     }
