@@ -2,14 +2,24 @@ package com.adriancasares.foursquare.base.util;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.jetbrains.annotations.NotNull;
 
-public class Position {
+import java.util.HashMap;
+import java.util.Map;
+
+public class Position implements ConfigurationSerializable {
 
     private int x;
     private int y;
     private int z;
     private int yaw;
     private int pitch;
+
+    static {
+        ConfigurationSerialization.registerClass(Position.class);
+    }
 
     public Position(int x, int y, int z, int yaw, int pitch) {
         this.x = x;
@@ -20,11 +30,24 @@ public class Position {
     }
 
     public Position(int x, int y, int z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.yaw = 0;
-        this.pitch = 0;
+        this(x, y, z, 0, 0);
+    }
+
+    public Position(int x, int y, int z, int yaw) {
+        this(x, y, z, yaw, 0);
+    }
+
+    public Position(Map<String, Object> deserialize){
+        try{
+            x = (int) deserialize.get("x");
+            y = (int) deserialize.get("y");
+            z = (int) deserialize.get("z");
+            yaw = (int) deserialize.getOrDefault("yaw", 0);
+            pitch = (int) deserialize.getOrDefault("pitch", 0);
+        }
+        catch(ClassCastException | NullPointerException ex){
+            throw new IllegalArgumentException("Failed to build Position object from configuration: corrupted data file!", ex);
+        }
     }
 
     public int getX() {
@@ -73,5 +96,17 @@ public class Position {
 
     public Location getPlayerLocation(World world) {
         return new Location(world, x + 0.5, y, z + 0.5, yaw, pitch);
+    }
+
+    @Override
+    public @NotNull Map<String, Object> serialize() {
+        Map<String, Object> builder = new HashMap<>();
+        builder.put("x", x);
+        builder.put("y", y);
+        builder.put("z", z);
+        builder.put("yaw", yaw);
+        builder.put("pitch", pitch);
+
+        return builder;
     }
 }

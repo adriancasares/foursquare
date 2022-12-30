@@ -2,3 +2,8 @@ name: FourSquare
 version: '${version}'
 main: com.adriancasares.foursquare.FourSquare
 api-version: 1.19
+commands:
+  adminutil:
+    description: ''
+  gameinit:
+    description: ''

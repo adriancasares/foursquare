@@ -6,6 +6,10 @@ import com.adriancasares.foursquare.base.GameInitCommand;
 import com.adriancasares.foursquare.base.Team;
 import com.adriancasares.foursquare.base.command.Command;
 import com.adriancasares.foursquare.base.event.EventSupplier;
+import com.adriancasares.foursquare.base.data.DataManager;
+import com.adriancasares.foursquare.base.util.Position;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -24,6 +28,8 @@ public final class FourSquare extends JavaPlugin {
 
     private EventSupplier eventSupplier;
 
+    private DataManager dataManager;
+
     @Override
     public void onEnable() {
         // Plugin startup logic
@@ -33,6 +39,8 @@ public final class FourSquare extends JavaPlugin {
 
         new GameInitCommand().register();
         new AdminUtilCommand().register();
+
+        this.dataManager = new DataManager();
     }
 
     @Override
@@ -78,5 +86,9 @@ public final class FourSquare extends JavaPlugin {
 
     public void setEventSupplier(EventSupplier eventSupplier) {
         this.eventSupplier = eventSupplier;
+    }
+
+    public DataManager getDataManager() {
+        return dataManager;
     }
 }
