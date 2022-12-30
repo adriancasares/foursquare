@@ -3,12 +3,8 @@ package com.adriancasares.foursquare.artifact;
 import com.adriancasares.foursquare.FourSquare;
 import com.adriancasares.foursquare.base.GamePhase;
 import com.adriancasares.foursquare.base.event.EventConsumer;
-import com.adriancasares.foursquare.base.world.WorldWrapper;
+import com.adriancasares.foursquare.base.map.GameMap;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 
 import static com.adriancasares.foursquare.FourSquare.fs;
@@ -43,14 +39,14 @@ public class ArtifactStarting extends GamePhase {
 
         Artifact artifact = (Artifact) getParent();
 
-        WorldWrapper world = artifact.getWorld();
+        GameMap world = artifact.getWorld();
 
 
         EventConsumer load = FourSquare.fs().getEventSupplier().registerConsumer(WorldLoadEvent.class, (e) -> {
-            if(world.getName().equals(e.getWorld().getName())) {
-                startCountdown();
-                ((Artifact) getParent()).placeArtifact(e.getWorld());
-            }
+//            if(world.getName().equals(e.getWorld().getName())) {
+//                startCountdown();
+//                ((Artifact) getParent()).placeArtifact(e.getWorld());
+//            }
         });
 
         registerEvent(load);

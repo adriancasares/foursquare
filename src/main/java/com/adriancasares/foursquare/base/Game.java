@@ -4,8 +4,7 @@ import com.adriancasares.foursquare.FourSquare;
 import com.adriancasares.foursquare.base.event.EventConsumer;
 import com.adriancasares.foursquare.base.event.EventContainer;
 import com.adriancasares.foursquare.base.schedule.ScheduleContainer;
-import com.adriancasares.foursquare.base.world.WorldWrapper;
-import org.bukkit.Bukkit;
+import com.adriancasares.foursquare.base.map.GameMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -13,18 +12,23 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 public abstract class Game implements EventContainer, ScheduleContainer {
 
+    String gameName;
+    private UUID gameId;
     private Team team;
 
-    private ArrayList<WorldWrapper> worlds = new ArrayList<>();
+    private ArrayList<GameMap> worlds = new ArrayList<>();
 
     private HashMap<Person, Scoreboard> scoreboards = new HashMap<>();
 
     private GamePhase currentPhase;
 
-    public Game(Team team) {
+    public Game(String gameName, Team team) {
+        this.gameName = gameName;
+        this.gameId = UUID.randomUUID();
         this.team = team;
 
         EventConsumer<PlayerJoinEvent> joinEvent = FourSquare.fs().getEventSupplier().registerConsumer(PlayerJoinEvent.class, (e) -> {
@@ -77,13 +81,13 @@ public abstract class Game implements EventContainer, ScheduleContainer {
         currentPhase.end();
     }
 
-    public void registerWorld(WorldWrapper world) {
+    public void registerWorld(GameMap world) {
         worlds.add(world);
     }
 
     public void deregisterWorlds() {
-        for(WorldWrapper world: worlds) {
-            world.delete();
+        for(GameMap world: worlds) {
+//            world.delete();
         }
     }
 
@@ -111,5 +115,13 @@ public abstract class Game implements EventContainer, ScheduleContainer {
 
     public Scoreboard getScoreboard(Person person) {
         return scoreboards.get(person);
+    }
+
+    public UUID getGameId() {
+        return gameId;
+    }
+
+    public String getName() {
+        return gameName;
     }
 }

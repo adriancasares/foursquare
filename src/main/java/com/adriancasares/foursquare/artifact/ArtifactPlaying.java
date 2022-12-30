@@ -103,12 +103,12 @@ public class ArtifactPlaying extends GamePhase {
     }
 
     private void teleportPlayers() {
-        World world = ((Artifact) getParent()).getWorld().getWorld();
-        for(int i = 0; i < getParent().getTeam().getPlayers().size(); i++) {
-            Person person = getParent().getTeam().getPlayers().get(i);
-            Position position = ((Artifact) getParent()).getMapConfig().getPlayerSpawns().get(i);
-            person.getPlayer().teleport(position.getPlayerLocation(world));
-        }
+//        World world = ((Artifact) getParent()).getWorld().getWorld();
+//        for(int i = 0; i < getParent().getTeam().getPlayers().size(); i++) {
+//            Person person = getParent().getTeam().getPlayers().get(i);
+//            Position position = ((Artifact) getParent()).getMapConfig().getPlayerSpawns().get(i);
+//            person.getPlayer().teleport(position.getPlayerLocation(world));
+//        }
     }
 
     public void setArtifactHolder(Person person) {
@@ -182,7 +182,7 @@ public class ArtifactPlaying extends GamePhase {
     private void handleDeath(PlayerDeathEvent event) {
         if (artifactHolder != null && artifactHolder.getPlayer().equals(event.getPlayer())) {
             setArtifactHolder(null);
-            ((Artifact) getParent()).placeArtifact(((Artifact) getParent()).getWorld().getWorld());
+//            ((Artifact) getParent()).placeArtifact(((Artifact) getParent()).getWorld().getWorld());
         }
 
         event.setCancelled(true);

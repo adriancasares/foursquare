@@ -1,32 +1,25 @@
 package com.adriancasares.foursquare.artifact;
 
-import com.adriancasares.foursquare.FourSquare;
 import com.adriancasares.foursquare.base.Game;
 import com.adriancasares.foursquare.base.Person;
 import com.adriancasares.foursquare.base.Team;
-import com.adriancasares.foursquare.base.event.EventConsumer;
-import com.adriancasares.foursquare.base.util.FSColor;
-import com.adriancasares.foursquare.base.world.WorldWrapper;
+import com.adriancasares.foursquare.base.map.GameMap;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.world.WorldLoadEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Scoreboard;
 
 public class Artifact extends Game {
 
     public static final int RESPAWN_TIME = 5;
     public Artifact(Team team) {
-        super(team);
+        super("Artifact", team);
     }
 
-    private WorldWrapper world;
+    private GameMap world;
 
-    private ArtifactMapConfig mapConfig = ArtifactMapConfig.createDefault();
+//    private ArtifactMapConfig mapConfig = ArtifactMapConfig.createDefault();
 
     private void initScorecardTeams(Scoreboard scoreboard) {
         org.bukkit.scoreboard.Team team1 = scoreboard.registerNewTeam("team1");
@@ -65,17 +58,17 @@ public class Artifact extends Game {
     @Override
     public void onStart() {
 
-        world = new WorldWrapper("artifact", null, true);
+//        world = new WorldWrapper("artifact", null, true);
 
         setCurrentPhase(new ArtifactStarting(this));
 
-        world.create();
+//        world.create();
 
-        registerWorld(world);
+//        registerWorld(world);
 
-        getTeam().getPlayers().forEach((player) -> {
-            player.getPlayer().teleport(world.getWorld().getSpawnLocation());
-        });
+//        getTeam().getPlayers().forEach((player) -> {
+//            player.getPlayer().teleport(world.getWorld().getSpawnLocation());
+//        });
 
         getTeam().getPlayers().forEach((player) -> {
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -100,25 +93,12 @@ public class Artifact extends Game {
             setScoreboard(player, scoreboard);
             initScorecardTeams(scoreboard);
         });
-
-        EventConsumer blockPlace = FourSquare.fs().getEventSupplier().registerConsumer(BlockPlaceEvent.class, (e) -> {
-            if (e.getBlock().getType() != Material.WHITE_TERRACOTTA) {
-                e.setCancelled(true);
-            }
-        });
-        EventConsumer blockBreak = FourSquare.fs().getEventSupplier().registerConsumer(BlockBreakEvent.class, (e) -> {
-            e.setCancelled(true);
-        });
-
-        registerEvent(blockPlace);
-        registerEvent(blockBreak);
-
     }
 
     public void placeArtifact(World world) {
-        ArtifactMapConfig mapConfig = getMapConfig();
+//        ArtifactMapConfig mapConfig = getMapConfig();
 
-        mapConfig.getArtifactLocation().getBlockLocation(world).getBlock().setType(Material.GOLD_BLOCK);
+//        mapConfig.getArtifactLocation().getBlockLocation(world).getBlock().setType(Material.GOLD_BLOCK);
     }
 
     @Override
@@ -148,11 +128,11 @@ public class Artifact extends Game {
         System.out.println("spec leave");
     }
 
-    public WorldWrapper getWorld() {
+    public GameMap getWorld() {
         return world;
     }
 
-    public ArtifactMapConfig getMapConfig() {
-        return mapConfig;
-    }
+//    public ArtifactMapConfig getMapConfig() {
+//        return mapConfig;
+//    }
 }
