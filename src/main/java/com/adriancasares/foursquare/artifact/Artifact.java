@@ -11,8 +11,11 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Scoreboard;
@@ -62,6 +65,16 @@ public class Artifact extends Game {
             spectators.addEntry(person.getPlayer().getName());
         }
     }
+
+    private void handleMoveEvent(PlayerMoveEvent event) {
+        // teleport player back to spawn if they move out of bounds
+        if(event.getTo().getY() < 0) {
+            event.getPlayer().teleport(
+                    getMapConfig().getSpectatorSpawn().getPlayerLocation(getWorld().getWorld())
+            );
+        }
+    }
+
     @Override
     public void onStart() {
 
@@ -112,6 +125,8 @@ public class Artifact extends Game {
 
         registerEvent(blockPlace);
         registerEvent(blockBreak);
+
+        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(PlayerMoveEvent.class, EventPriority.LOW, this::handleMoveEvent));
 
     }
 

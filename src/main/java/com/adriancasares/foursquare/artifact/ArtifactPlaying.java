@@ -13,12 +13,16 @@ import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.minecraft.world.damagesource.DamageSource;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -80,6 +84,15 @@ public class ArtifactPlaying extends GamePhase {
         chestplate.setItemMeta(meta);
 
         player.getInventory().setChestplate(chestplate);
+    }
+
+    private boolean isPersonRespawning(Person person) {
+        return respawns.containsKey(person);
+    }
+
+    private boolean isPlayerRespawning(Player player) {
+        Person person = FourSquare.fs().getCurrentTeam().getPerson(player);
+        return isPersonRespawning(person);
     }
 
     private void handleDamage(EntityDamageEvent event) {
@@ -197,6 +210,16 @@ public class ArtifactPlaying extends GamePhase {
         return respawns.containsKey(person);
     }
 
+    private void handleMoveEvent(PlayerMoveEvent event) {
+        if(event.getTo().getY() < 0) {
+            Player player = event.getPlayer();
+            if(isPlayerRespawning(player)) {
+                return;
+            }
+            player.setHealth(0);
+        }
+    }
+
     @Override
     public void onStart() {
         for(int i = 0; i < getParent().getTeam().getPlayers().size(); i++) {
@@ -215,6 +238,8 @@ public class ArtifactPlaying extends GamePhase {
         registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(PlayerDeathEvent.class, this::handleDeath));
 
         registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(FoodLevelChangeEvent.class, (e) -> e.setCancelled(true)));
+
+        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(PlayerMoveEvent.class, EventPriority.LOWEST, this::handleMoveEvent));
     }
 
     @Override
