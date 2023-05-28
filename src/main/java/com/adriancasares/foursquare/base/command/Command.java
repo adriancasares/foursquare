@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.command.defaults.BukkitCommand;
-import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_19_R2.CraftServer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 

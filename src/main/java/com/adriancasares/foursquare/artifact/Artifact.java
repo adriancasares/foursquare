@@ -29,7 +29,7 @@ public class Artifact extends Game {
 
     private WorldWrapper world;
 
-    private ArtifactMapConfig mapConfig = ArtifactMapConfig.createDefault();
+    private ArtifactMapConfig mapConfig = new ArtifactMapConfig();
 
     private void initScorecardTeams(Scoreboard scoreboard) {
         org.bukkit.scoreboard.Team team1 = scoreboard.registerNewTeam("team1");
@@ -78,7 +78,7 @@ public class Artifact extends Game {
     @Override
     public void onStart() {
 
-        world = new WorldWrapper("artifact", null, true);
+        world = new WorldWrapper("artifact", "template-temple", true);
 
         setCurrentPhase(new ArtifactStarting(this));
 
@@ -108,6 +108,12 @@ public class Artifact extends Game {
             player.getPlayer().getInventory().setHeldItemSlot(0);
             player.getPlayer().setInvulnerable(false);
             player.getPlayer().setInvisible(false);
+            player.getPlayer().setCollidable(true);
+            player.getPlayer().getActivePotionEffects().forEach((effect) -> {
+                player.getPlayer().removePotionEffect(effect.getType());
+            });
+
+
 
 
             setScoreboard(player, scoreboard);

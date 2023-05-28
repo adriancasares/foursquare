@@ -40,6 +40,15 @@ public class ArtifactRespawn {
         player.setInvulnerable(false);
         player.setFlying(false);
         player.setInvisible(false);
+
+
+        player.teleport(
+            ((Artifact) instance.getParent())
+                    .getMapConfig()
+                    .getPlayerSpawns()
+                    .get(person.getIndex())
+                    .getPlayerLocation(((Artifact) instance.getParent()).getWorld().getWorld())
+            );
     }
 
     public ArtifactRespawn(Person person, int respawnTime, ArtifactPlaying instance) {

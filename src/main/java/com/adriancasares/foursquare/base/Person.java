@@ -77,8 +77,6 @@ public class Person {
     }
 
     public FSColor getColor() {
-        int index = (int) (Math.random() * 5) - 1;
-
         if(index == -1) {
             return FSColor.SPECTATOR;
         }

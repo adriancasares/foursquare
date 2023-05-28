@@ -6,8 +6,10 @@ import com.adriancasares.foursquare.base.GameInitCommand;
 import com.adriancasares.foursquare.base.Team;
 import com.adriancasares.foursquare.base.command.Command;
 import com.adriancasares.foursquare.base.event.EventSupplier;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.HashMap;
 
 public final class FourSquare extends JavaPlugin {
@@ -78,5 +80,16 @@ public final class FourSquare extends JavaPlugin {
 
     public void setEventSupplier(EventSupplier eventSupplier) {
         this.eventSupplier = eventSupplier;
+    }
+
+    public YamlConfiguration getCustomConfig(String fileName) {
+        File file = new File(getDataFolder(), fileName);
+
+        if(!file.exists()) {
+            file.getParentFile().mkdirs();
+            saveResource(fileName, false);
+        }
+
+        return YamlConfiguration.loadConfiguration(file);
     }
 }

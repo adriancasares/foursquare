@@ -15,20 +15,27 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.minecraft.world.damagesource.DamageSource;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
+import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.util.BlockIterator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -50,6 +57,8 @@ public class ArtifactPlaying extends GamePhase {
     private final ItemBuilder SCAFFOLDING = new ItemBuilder(Material.WHITE_TERRACOTTA, "Scaffolding");
     private final ItemBuilder SNOWBALL = new ItemBuilder(Material.SNOWBALL);
     private final ItemBuilder BASE_CHESTPLATE = new ItemBuilder(Material.LEATHER_CHESTPLATE);
+
+    private final ItemBuilder GOLDEN_APPLE = new ItemBuilder(Material.GOLDEN_APPLE, "Golden Apple");
 
     private final ScoreboardTemplate scoreboardTemplate = new ScoreboardTemplate(Component.text("First to 90").decorate(TextDecoration.BOLD),
             new ArrayList<>());
@@ -145,6 +154,7 @@ public class ArtifactPlaying extends GamePhase {
 
             if (person != null) {
                 setArtifactHolder(person);
+
                 updateScoreboard();
 
                 new MessageTemplate(person.getColor())
@@ -152,11 +162,27 @@ public class ArtifactPlaying extends GamePhase {
                         .appendText(" picked up the artifact.")
                         .sendTo(getParent());
             }
+
+            event.getBlock().setType(Material.AIR);
         }
 
         if (event.getBlock().getType() == Material.WHITE_TERRACOTTA) {
             event.getBlock().setType(Material.AIR);
             event.getPlayer().getInventory().addItem(SCAFFOLDING.build(1));
+        }
+    }
+
+    private void handleEat(PlayerItemConsumeEvent event) {
+        if(event.getItem().getType() == Material.GOLDEN_APPLE) {
+            if(event.getPlayer().getHealth() == 20) {
+                event.getPlayer().setAbsorptionAmount(4);
+            } else {
+                event.getPlayer().setHealth(20);
+            }
+
+            event.getPlayer().getInventory().removeItem(GOLDEN_APPLE.build(1));
+
+            event.setCancelled(true);
         }
     }
 
@@ -174,6 +200,56 @@ public class ArtifactPlaying extends GamePhase {
 
 
         }, 0, 20);
+
+        registerTask(taskId);
+    }
+
+    private void onSnowballBreak(ProjectileHitEvent event) {
+        if(!event.getEntityType().equals(EntityType.SNOWBALL)) return;
+
+        Snowball snowball = (Snowball) event.getEntity();
+        Location location = snowball.getLocation();
+
+        int count = 0;
+        BlockIterator iterator = new BlockIterator(location.getWorld(), location.toVector(), snowball.getVelocity().normalize(), 0, 2);
+
+        while(iterator.hasNext()) {
+            Block hitBlock = iterator.next();
+
+            if(hitBlock.getType().equals(Material.WHITE_TERRACOTTA))
+            {
+                hitBlock.setType(Material.AIR);
+
+                if(snowball.getShooter() instanceof Player player) {
+                    if(isPlayerRespawning(player)) {
+                        continue;
+                    }
+
+                    player.getInventory().addItem(SCAFFOLDING.build(1));
+                }
+            }
+        }
+    }
+    private void startRefillTimer() {
+        int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(fs(), () -> {
+            for(Person person : getParent().getTeam().getPlayers()) {
+                if(!person.isInGame() || isPersonRespawning(person)) {
+                    continue;
+                }
+
+                Player player = person.getPlayer();
+
+                player.getInventory().addItem(SNOWBALL.build(3));
+
+                player.getInventory().addItem(GOLDEN_APPLE.build(1));
+
+                player.getInventory().addItem(SCAFFOLDING.build(16));
+
+                player.sendMessage(ChatColor.GRAY + "Your inventory has been refilled.");
+
+                player.playSound(player.getLocation(), Sound.BLOCK_COMPARATOR_CLICK, 0.5f, 1);
+            }
+        }, 20 * 20, 20 * 20);
 
         registerTask(taskId);
     }
@@ -227,7 +303,11 @@ public class ArtifactPlaying extends GamePhase {
             setInventory(person);
         }
 
+        updateScoreboard();
+
         startArtifactTimer();
+
+        startRefillTimer();
 
         teleportPlayers();
 
@@ -240,6 +320,10 @@ public class ArtifactPlaying extends GamePhase {
         registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(FoodLevelChangeEvent.class, (e) -> e.setCancelled(true)));
 
         registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(PlayerMoveEvent.class, EventPriority.LOWEST, this::handleMoveEvent));
+
+        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(PlayerItemConsumeEvent.class, this::handleEat));
+
+        registerEvent(FourSquare.fs().getEventSupplier().registerConsumer(ProjectileHitEvent.class, this::onSnowballBreak));
     }
 
     @Override

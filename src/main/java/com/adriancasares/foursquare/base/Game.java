@@ -32,9 +32,13 @@ public abstract class Game implements EventContainer, ScheduleContainer {
 
             if(team.containsPlayer(player)) {
                 onPlayerJoin();
+
+                getCurrentPhase().onPlayerJoin();
             }
             else {
                 onSpectatorJoin();
+
+                getCurrentPhase().onSpectatorJoin();
             }
         });
 
